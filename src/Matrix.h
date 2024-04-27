@@ -30,7 +30,7 @@ public:
     Matrix& operator=(const Matrix& other);
 
     // Destructor
-    ~Matrix();
+    virtual ~Matrix();
 
     // Input stream operator
     friend std::istream& operator>>(std::istream& in, Matrix& mat);
@@ -39,13 +39,13 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Matrix& mat);
 
     // Arithmetic operators
-    Matrix operator+(const Matrix& other) const;
-    Matrix operator-(const Matrix& other) const;
-    Matrix operator*(const Matrix& other) const;
+    Matrix operator+(const Matrix& other);
+    Matrix operator-(const Matrix& other);
+    Matrix operator*(const Matrix& other);
 
     // Subscript operator
-    Vector<uint8_t>& operator[](int index);
-    const Vector<uint8_t>& operator[](int index) const;
+    Vector<uint8_t> operator[](int index) const;
+    const Vector<uint8_t>& operator[](int index);
 
     // Number of rows
     int getRows() const;
@@ -58,4 +58,3 @@ public:
 };
 
 #endif // MATRIX_H
-

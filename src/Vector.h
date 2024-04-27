@@ -20,15 +20,20 @@ public:
 
   //Constructor with size
   Vector<T>(int size) {
+    std::cout << "Working!\n";
     this->size = size;
     this->elements = (T*) malloc(sizeof(T) * size);
+    std::cout << "allocated! " << this->getSize();
   }
 
   //Copy Constructor
   Vector<T>(const Vector& vector) {
     this->size = vector.getSize();
-    this->elements = vector.getElements();
     this->index = vector.getIndex();
+    this->elements = (T*) malloc(sizeof(T) * this->getSize());
+    for (int i = 0; i < this->getSize(); i++) {
+      *(this->elements + i) = vector[i];
+    }
   }
 
   //for adding elements
@@ -53,18 +58,22 @@ public:
     if (this->getElements() != NULL && this->getIndex() != 0) delete(this->getElements());
   }
 
-  const T* getElements() const {
+  T* getElements() const {
     return this->elements;
   }
 
   //Assignment
-  Vector<T>& operator=(const Vector& other) const {
+  Vector<T>& operator=(const Vector& other) {
     //Prevent Memory Leaks
     if (this->getElements() != NULL) delete(this->getElements());
 
-    this->elements = other.getElements();
+    this->elements = (T*) malloc(sizeof(T) * other.getSize());
     this->size = other.getSize();
     this->index = other.getIndex();
+
+    for (int i = 0; i < this->size; i++) {
+      *(this->elements + i) = other[i];
+    }
 
     return *this;
   }
@@ -111,6 +120,22 @@ public:
   virtual ~Vector() {
     //Free the memory of the elements list
     if (this->getElements() != NULL) delete(this->getElements());
+  }
+
+
+  // Input stream operator
+  friend std::istream& operator>>(std::istream& in, Vector& vector) {
+
+  }
+
+  // Output stream operator
+  friend std::ostream& operator<<(std::ostream& out, const Vector& vector) {
+    out << "{";
+    for (int i = 0; i < vector.getSize(); i++) {
+      out << vector[i] << ", ";
+    }
+    out << "}" << std::endl;
+    return out;
   }
 
 };

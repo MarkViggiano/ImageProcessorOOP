@@ -20,11 +20,11 @@ endif
 ifeq ($(OS_NAME),Windows)
     ifeq ($(ARCH),x64)
         CXX := g++
-        CXXFLAGS := -Wall -std=c++17 -w -m64
+        CXXFLAGS := -Wall -std=c++17 -lstdc++fs -w -m64
     endif
     ifeq ($(ARCH),x86)
         CXX := g++
-        CXXFLAGS := -Wall -std=c++17 -w -m32
+        CXXFLAGS := -Wall -std=c++17 -lstdc++fs -w -m32
     endif
 else ifeq ($(OS_NAME),Darwin) # macOS
     CXX := g++
@@ -35,7 +35,7 @@ else ifeq ($(OS_NAME),Darwin) # macOS
 else
     # Other OS (e.g., Linux)
     CXX := g++
-    CXXFLAGS := -Wall -std=c++17 -w
+    CXXFLAGS := -Wall -std=c++17 -lstdc++fs -w
 endif
 
 LIBS=
@@ -55,4 +55,3 @@ $(TARGET): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(TARGET)
-
