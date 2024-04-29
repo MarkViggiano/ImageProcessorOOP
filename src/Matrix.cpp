@@ -8,18 +8,17 @@ Matrix::Matrix() {}
 
 // Constructor with rows and columns
 Matrix::Matrix(int rows, int columns) {
-  std::cout << "calling constructor\n";
-  //Matrix::data = Vector<Vector<uint8_t>>(rows);
-  std::cout << "setting data\n";
-  Matrix::numRows = rows;
-  Matrix::numCols = columns;
-  std::cout << "generating data\n";
-  //for (int i = 0; i < rows; i++) {
-    //Matrix::data[i] = Vector<uint8_t>(columns);
-    //for (int j = 0; j < columns; j++) {
-      //Matrix::data[i][j] = 0;
-    //}
-  //}
+  std::cout << "calling constructor" << std::endl;
+  std::cout << "setting data" << std::endl;
+  this->numRows = rows;
+  this->numCols = columns;
+  std::cout << "generating data" << std::endl;
+
+  this->data = Vector<Vector<uint8_t>>(rows);
+  for (int i = 0; i < rows; i++) {
+     this->data[i] = Vector<uint8_t>(columns);
+  }
+  std::cout << "done!" << std::endl;
 }
 
 // Copy constructor
@@ -41,6 +40,8 @@ Matrix& Matrix::operator=(const Matrix& other) {
   for (int i = 0; i < Matrix::numRows; i++) {
     Matrix::data[i] = other[i]; //set the value of each element
   }
+
+  return *this;
 }
 
 // Destructor
@@ -48,39 +49,60 @@ Matrix::~Matrix() {}
 
 // Number of rows
 int Matrix::getRows() const {
-    return data.getSize();
+    return numRows;
 }
 
 // Number of columns
 int Matrix::getCols() const {
-    return Matrix::data.getSize() > 0 ? Matrix::data[0].getSize() : 0;
+    return this->numCols;
 }
+
 
 std::ostream& operator<<(std::ostream& out, const Matrix& mat) {
-  /*
 
-  out << "Rows, Columns: " << mat.getRows() << ", " << mat.getCols() << "\n";
-  out << "{\n";
+  out << "Rows, Columns: " << mat.getRows() << ", " << mat.getCols() << std::endl;
+  out << "{" << std::endl;
   for (int i = 0; i < mat.getRows(); i++) {
-    out << mat[i];
+    out << "," << mat[i];
   }
-  out << "}\n";
+  out << "}" << std::endl;
 
   return out;
 
-  */
 
-  out << "Printed matrix!!\n";
-  return out;
+
+  //out << "Printed matrix!!\n";
+  //return out;
 }
+
 
 // Arithmetic operators
 Matrix Matrix::operator+(const Matrix& other) {
-    // YOUR CODE HERE
+  if (this->getRows() != other.getRows() || this->getCols() != other.getCols()) {
+    std::cout << "Invalid Matrix dimensions for adding! Returning first matrix." << std::endl;
+    return *this;
+  }
+
+  for (int i = 0; i < this->getRows(); i++) {
+    this->data[i] = this->data[i] + other[i];
+  }
+
+  return *this;
+
 }
 
 Matrix Matrix::operator-(const Matrix& other) {
-    // YOUR CODE HERE
+  if (this->getRows() != other.getRows() || this->getCols() != other.getCols()) {
+    std::cout << "Invalid Matrix dimensions for subtracting! Returning first matrix." << std::endl;
+    return *this;
+  }
+
+  for (int i = 0; i < this->getRows(); i++) {
+    //subtract vectors from each other
+    this->data[i] = this->data[i] - other[i];
+  }
+
+  return *this;
 }
 
 Matrix Matrix::operator*(const Matrix& other) {
@@ -100,5 +122,33 @@ const Vector<uint8_t>& Matrix::operator[](int index) {
 
 // Transpose function (in-place)
 void Matrix::transpose() {
-    // YOUR CODE HERE
+    /*
+
+    Transposing a Matrix is in short making the rows the columns and the columns the rows.
+
+    [
+    1, 2, 3, 4
+    5, 6, 7, 8
+    ]
+
+    transposes into:
+    [
+    1, 5
+    2, 6
+    3, 7
+    4, 8
+    ]
+
+    */
+
+    Vector<Vector<uint8_t>> newData = Vector<Vector<uint8_t>>(this->getCols());
+    Vector<uint8_t> rows;
+
+    for (int i = 0; i < this->getCols(); i++) {
+      rows = Vector<uint8_t>(this->getCols());
+      for (int j = 0; j < this->getRows(); j++) {
+        rows.addElement(this->data[i][j]);
+      }
+    }
+
 }

@@ -11,6 +11,7 @@ class Matrix {
 
 protected:
     Vector<Vector<uint8_t>> data;
+    Vector<int> red;
 
 private:
     int numRows;
@@ -32,12 +33,6 @@ public:
     // Destructor
     virtual ~Matrix();
 
-    // Input stream operator
-    friend std::istream& operator>>(std::istream& in, Matrix& mat);
-
-    // Output stream operator
-    friend std::ostream& operator<<(std::ostream& out, const Matrix& mat);
-
     // Arithmetic operators
     Matrix operator+(const Matrix& other);
     Matrix operator-(const Matrix& other);
@@ -55,6 +50,13 @@ public:
 
     // Transpose function (in-place)
     void transpose();
+
+    // Input stream operator
+    friend std::istream& operator>>(std::istream& in, Matrix& mat);
+
+    // Output stream operator
+    friend std::ostream& operator<<(std::ostream& out, const Matrix& mat);
+
 };
 
 #endif // MATRIX_H

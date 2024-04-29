@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <stdlib.h>
 
 template<typename T>
 class Vector {
@@ -20,17 +19,15 @@ public:
 
   //Constructor with size
   Vector<T>(int size) {
-    std::cout << "Working!\n";
     this->size = size;
-    this->elements = (T*) malloc(sizeof(T) * size);
-    std::cout << "allocated! " << this->getSize();
+    this->elements = new T[size];
   }
 
   //Copy Constructor
   Vector<T>(const Vector& vector) {
     this->size = vector.getSize();
     this->index = vector.getIndex();
-    this->elements = (T*) malloc(sizeof(T) * this->getSize());
+    this->elements = new T[this->size];
     for (int i = 0; i < this->getSize(); i++) {
       *(this->elements + i) = vector[i];
     }
@@ -55,7 +52,12 @@ public:
   }
 
   void setElements(const T* elements) {
-    if (this->getElements() != NULL && this->getIndex() != 0) delete(this->getElements());
+    if (this->getElements() != NULL && this->getIndex() != 0) {
+      for (int i = 0; i < this->getSize(); i++) {
+        delete(this->getElements()[i]);
+      }
+      delete(this->getElements());
+    }
   }
 
   T* getElements() const {
@@ -67,7 +69,7 @@ public:
     //Prevent Memory Leaks
     if (this->getElements() != NULL) delete(this->getElements());
 
-    this->elements = (T*) malloc(sizeof(T) * other.getSize());
+    this->elements = new T[other.getSize()];
     this->size = other.getSize();
     this->index = other.getIndex();
 
@@ -119,7 +121,7 @@ public:
   //Destructor
   virtual ~Vector() {
     //Free the memory of the elements list
-    if (this->getElements() != NULL) delete(this->getElements());
+    delete[] elements;
   }
 
 
@@ -130,13 +132,18 @@ public:
 
   // Output stream operator
   friend std::ostream& operator<<(std::ostream& out, const Vector& vector) {
-    out << "{";
-    for (int i = 0; i < vector.getSize(); i++) {
-      out << vector[i] << ", ";
+    if (vector.getSize() == 0) {
+        out << "{}" << std::endl;
+    } else {
+        out << "{";
+        for (int i = 0; i < vector.getSize() - 1; i++) {
+            out << "," << vector[i] << ", ";
+        }
+        out << vector[vector.getSize() - 1] << "}" << std::endl;
     }
-    out << "}" << std::endl;
     return out;
   }
+
 
 };
 
