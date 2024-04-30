@@ -11,26 +11,24 @@ class Vector {
 private:
   T* elements;
   int index = 0;
-  int size;
+  size_t size;
 
 public:
   //Empty Constructor
-  Vector<T>() {}
+  Vector<T>() : Vector<T>(0){}
 
   //Constructor with size
-  Vector<T>(int size) {
-    this->size = size;
-    this->elements = new T[size];
+  //template<typename T>
+  Vector<T>(size_t size) : size(size), elements(nullptr) {
+    if (size > 0) {
+      this->elements = new T[size];
+    }
   }
 
   //Copy Constructor
-  Vector<T>(const Vector& vector) {
-    this->size = vector.getSize();
-    this->index = vector.getIndex();
-    this->elements = new T[this->size];
-    for (int i = 0; i < this->getSize(); i++) {
-      *(this->elements + i) = vector[i];
-    }
+  Vector<T>(const Vector& other) : size(other.getSize()) {
+    this->elements = new T[size];
+    std::copy(other.elements, other.elements + size, elements);
   }
 
   //for adding elements
@@ -38,13 +36,28 @@ public:
     return this->index;
   }
 
-  int getSize() const {
+  size_t getSize() const {
     return this->size;
   }
 
   bool isFull() const {
     return this->size - 1 == this->index;
   }
+
+  void resize(const size_t new_size) {
+    T *new_arr = new T[new_size];
+
+    if (this->size > 0) {
+        // Take minimum between new_size and size_ for the loop end declaration
+        size_t copy_size = (new_size > this->size ? this->size : new_size);
+        for (int i = 0; i < copy_size; i++) {
+            new_arr[i] = this->elements[i];
+        }
+        delete[] this->elements;
+    }
+    this->elements = new_arr;
+    this->size = new_size;
+}
 
   void addElement(const T& element) {
     if (this->isFull()) return;
@@ -67,16 +80,13 @@ public:
   //Assignment
   Vector<T>& operator=(const Vector& other) {
     //Prevent Memory Leaks
-    if (this->getElements() != NULL) delete(this->getElements());
-
-    this->elements = new T[other.getSize()];
-    this->size = other.getSize();
-    this->index = other.getIndex();
-
-    for (int i = 0; i < this->size; i++) {
-      *(this->elements + i) = other[i];
+    if(this == &other) {
+        return *this;
     }
-
+    delete[] this->elements;
+    this->size = other.getSize();
+    this->elements = new T[this->size];
+    std::copy(other.elements, other.elements + this->getSize(), elements);
     return *this;
   }
 
