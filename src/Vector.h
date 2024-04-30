@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <iomanip>
 
 template<typename T>
 class Vector {
@@ -138,6 +139,23 @@ public:
   // Input stream operator
   friend std::istream& operator>>(std::istream& in, Vector& vector) {
 
+    int vectorSize;
+    int itemSize;
+
+    //Vector input-stream example: (size, item_size) (item1,item2, ...itemSize-1)
+    in.ignore(); //ignore first (
+    in >> std::setw(3) >> vectorSize;
+    vector.resize(vectorSize);
+
+    in.ignore(2); //ignore ,
+    in >> std::setw(3) >> itemSize;
+    in.ignore(3); //ignore ) (
+    for (int i = 0; i < vector.getSize(); i++) {
+      in >> std::setw(itemSize) >> vector.getElements()[i]; //set the value
+      in.ignore(); //skip the comma
+    }
+
+    return in;
   }
 
   // Output stream operator
