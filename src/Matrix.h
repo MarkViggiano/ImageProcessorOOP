@@ -24,6 +24,9 @@ public:
     // Constructor with rows and columns
     Matrix(int rows, int cols);
 
+    // Constructor with image data
+    Matrix(uint8_t* imageData, int rows, int cols, int channels);
+
     // Copy constructor
     Matrix(const Matrix& other);
 

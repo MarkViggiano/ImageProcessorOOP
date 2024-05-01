@@ -7,18 +7,33 @@
 Matrix::Matrix() {}
 
 // Constructor with rows and columns
-Matrix::Matrix(int rows, int columns) {
-  std::cout << "calling constructor" << std::endl;
-  std::cout << "setting data" << std::endl;
+Matrix::Matrix(int rows, int cols) {
   this->numRows = rows;
-  this->numCols = columns;
-  std::cout << "generating data" << std::endl;
-
+  this->numCols = cols;
   this->data = Vector<Vector<uint8_t>>(rows);
   for (int i = 0; i < rows; i++) {
-     this->data[i] = Vector<uint8_t>(columns);
+     this->data[i] = Vector<uint8_t>(cols);
   }
-  std::cout << "done!" << std::endl;
+}
+
+Matrix::Matrix(uint8_t* imageData, int rows, int cols, int channels) {
+  this->numRows = rows;
+  this->numCols = cols;
+  this->data = Vector<Vector<uint8_t>>(rows);
+  for (int i = 0; i < rows; i++) {
+     this->data[i] = Vector<uint8_t>(cols);
+  }
+
+  //this is taken directly from the save method below.
+  //if this is how it's accessed and then this is how its declared.
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      for (int k = 0; k < channels; k++) {
+          this->data[i][j * channels + k] = *(imageData + i + j + k);
+      }
+    }
+  }
+
 }
 
 // Copy constructor

@@ -53,9 +53,10 @@ public:
     // Get height of the image
     int getHeight() const;
 
+    std::string getFilePath() const;
+
     // Save image to a file
     void save(const std::string& filePath) const;
 };
 
 #endif // IMAGE_H
-

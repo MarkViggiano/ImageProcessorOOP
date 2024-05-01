@@ -36,7 +36,9 @@ Image::Image(const std::string& filePath, int numChannels, int width, int height
     : Matrix(height, width), filePath(filePath), numChannels(numChannels), width(width), height(height) {}
 
 // Copy constructor
-// YOUR CODE HERE
+Image::Image(const Image& other) : Matrix(other.getHeight(), other.getWidth()), filePath(other.getFilePath()) {
+
+}
 
 // Assignment operator
 Image& Image::operator=(const Image& other) {
@@ -56,7 +58,7 @@ Image Image::operator*(double scalar) const {
 
 // Adding two images
 Image Image::operator+(const Image& other) const {
-   // YOUR CODE HERE
+   return *this + other; //both are a matrix??
 }
 
 // Subtracting two images
@@ -78,6 +80,10 @@ int Image::getHeight() const {
     return height;
 }
 
+std::string Image::getFilePath() const {
+    return filePath;
+}
+
 void Image::save(const std::string& filePath) const {
     // Convert the Matrix data into a 1D array suitable for saving as an image
     std::vector<uint8_t> imageData;
@@ -88,7 +94,7 @@ void Image::save(const std::string& filePath) const {
             }
         }
     }
-    
+
     // Save the image data to the specified file using stb_image_write
     stbi_write_png(filePath.c_str(), width, height, numChannels, imageData.data(), width * numChannels);
 }
@@ -96,4 +102,3 @@ void Image::save(const std::string& filePath) const {
 void Image::resize(int newWidth, int newHeight) {
     // YOUR CODE HERE
 }
-
