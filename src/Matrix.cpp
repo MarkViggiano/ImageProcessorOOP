@@ -203,9 +203,16 @@ void Matrix::transpose() {
 
     */
 
+    //Create a copy of this
     Matrix m = *this;
+
+    //Prevent memory leaks
+    for (int i = 0; i < this->getRows(); i++) delete[] this->data[i].getElements();
+
+    //create new matrix of the proper sizing, rows become cols and cols become rows.
     *this = Matrix(m.getCols(), m.getRows());
 
+    //transpose the matrix
     for (int i = 0; i < m.getCols(); i++) {
       for (int j = 0; j < m.getRows(); j++) {
         this->data[i][j] = m[j][i];
