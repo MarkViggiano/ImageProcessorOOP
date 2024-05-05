@@ -11,7 +11,6 @@ class Matrix {
 
 protected:
     Vector<Vector<uint8_t>> data;
-    Vector<int> red;
 
 private:
     int numRows;
@@ -23,9 +22,6 @@ public:
 
     // Constructor with rows and columns
     Matrix(int rows, int cols);
-
-    // Constructor with image data
-    Matrix(uint8_t* imageData, int rows, int cols, int channels);
 
     // Copy constructor
     Matrix(const Matrix& other);
@@ -48,8 +44,14 @@ public:
     // Number of rows
     int getRows() const;
 
+    //Set number of rows
+    void setRows(int rows);
+
     // Number of columns
     int getCols() const;
+
+    //Set number of columns
+    void setColumns(int cols);
 
     // Transpose function (in-place)
     void transpose();

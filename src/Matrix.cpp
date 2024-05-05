@@ -11,26 +11,15 @@ Matrix::Matrix(int rows, int cols) {
   this->numRows = rows;
   this->numCols = cols;
   this->data = Vector<Vector<uint8_t>>(rows);
-  for (int i = 0; i < rows; i++) {
-     this->data[i] = Vector<uint8_t>(cols);
-  }
-}
-
-Matrix::Matrix(uint8_t* imageData, int rows, int cols, int channels) {
-  this->numRows = rows;
-  this->numCols = cols;
-  this->data = Vector<Vector<uint8_t>>(rows);
-  for (int i = 0; i < rows; i++) {
-     this->data[i] = Vector<uint8_t>(cols);
+  for (int i = 0; i < cols; i++) {
+    this->data[i].resize(cols);
   }
 
-  //this is taken directly from the save method below.
-  //if this is how it's accessed and then this is how its declared.
+  // Initialize our matrix to 0 !
   for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      for (int k = 0; k < channels; k++) {
-          this->data[i][j * channels + k] = *(imageData + i + j + k);
-      }
+    Vector<unsigned char> &row = this->data[i];
+    for (int j = 0; i < cols; i++) {
+      row[j] = 0;
     }
   }
 
@@ -60,11 +49,19 @@ Matrix& Matrix::operator=(const Matrix& other) {
 }
 
 // Destructor
-Matrix::~Matrix() {}
+Matrix::~Matrix() {
+  for (int i = 0; i < this->getRows(); i++) {
+    delete[] this->data[i].getElements();
+  }
+}
 
 // Number of rows
 int Matrix::getRows() const {
     return numRows;
+}
+
+void Matrix::setRows(int rows) {
+    this->numRows = rows;
 }
 
 // Number of columns
@@ -72,24 +69,52 @@ int Matrix::getCols() const {
     return this->numCols;
 }
 
-
-std::ostream& operator<<(std::ostream& out, const Matrix& mat) {
-
-  out << "Rows, Columns: " << mat.getRows() << ", " << mat.getCols() << std::endl;
-  out << "{" << std::endl;
-  for (int i = 0; i < mat.getRows(); i++) {
-    out << "," << mat[i];
-  }
-  out << "}" << std::endl;
-
-  return out;
-
-
-
-  //out << "Printed matrix!!\n";
-  //return out;
+void Matrix::setColumns(int cols) {
+    this->numCols = cols;
 }
 
+
+std::ostream &operator<<(std::ostream &os, const Matrix &mat) {
+    for (size_t i = 0; i < mat.getRows(); i++) {
+        for (size_t j = 0; j < mat.getCols(); j++) {
+          os << std::setw(3) << std::setfill('0') << static_cast<int>(mat[i][j]) << ' ';
+        }
+        os << '\n';
+    }
+    return os;
+}
+
+// Input stream operator
+std::istream& operator>>(std::istream& in, Matrix& mat) {
+
+  int rows;
+  int cols;
+  int itemSize;
+
+  //Vector input-stream example: (rows, cols, item_size) (item1,item2, ...itemSize-1)
+  in.ignore(); //ignore first (
+  in >> std::setw(3) >> rows;
+
+  in.ignore(2); //ignore , and space
+  in >> std::setw(3) >> cols;
+
+  in.ignore(2); //ignore , and space
+  in >> std::setw(3) >> itemSize;
+
+  mat = Matrix(rows, cols);
+
+  in.ignore(3); //ignore ) (
+  int temp; //for easy casting!!!
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      in >> std::setw(itemSize) >> temp; //set the value
+      mat.data[i][j] = temp;
+      in.ignore(); //skip the comma
+    }
+  }
+
+  return in;
+}
 
 // Arithmetic operators
 Matrix Matrix::operator+(const Matrix& other) {
@@ -99,6 +124,7 @@ Matrix Matrix::operator+(const Matrix& other) {
   }
 
   for (int i = 0; i < this->getRows(); i++) {
+    //Add the two vectors
     this->data[i] = this->data[i] + other[i];
   }
 
@@ -121,18 +147,39 @@ Matrix Matrix::operator-(const Matrix& other) {
 }
 
 Matrix Matrix::operator*(const Matrix& other) {
-    // YOUR CODE HERE
+    if (this->getCols() != other.getRows()) {
+        std::cout << "Invalid Matrix dimensions for multiplication! Returning first matrix." << std::endl;
+        return *this;
+    }
+
+    Matrix result(this->getRows(), other.getCols());
+
+    for (int i = 0; i < this->getRows(); i++) {
+        for (int j = 0; j < other.getCols(); j++) {
+            for (int k = 0; k < this->getCols(); k++) {
+                result.data[i][j] += this->data[i][k] * other[k][j];
+            }
+        }
+    }
+
+    for (int i = 0; i < this->getRows(); i++) {
+        for (int j = 0; j < other.getCols(); j++) {
+          this->data[i][j] = result.data[i][j] > 255 ? 255 : result.data[i][j];
+        }
+    }
+
+    return result;
 }
 
 // Subscript operator
 Vector<uint8_t> Matrix::operator[](int index) const {
-   if (index > Matrix::getRows()) index = Matrix::getRows();
-   return Matrix::data[index];
+   if (index > this->getRows()) index = this->getRows() - 1;
+   return this->data[index];
 }
 
 const Vector<uint8_t>& Matrix::operator[](int index) {
-  if (index > Matrix::getRows()) index = Matrix::getRows();
-  return Matrix::data[index];
+  if (index > this->getRows()) index = this->getRows() - 1;
+  return this->data[index];
 }
 
 // Transpose function (in-place)
@@ -156,13 +203,12 @@ void Matrix::transpose() {
 
     */
 
-    Vector<Vector<uint8_t>> newData = Vector<Vector<uint8_t>>(this->getCols());
-    Vector<uint8_t> rows;
+    Matrix m = *this;
+    *this = Matrix(m.getCols(), m.getRows());
 
-    for (int i = 0; i < this->getCols(); i++) {
-      rows = Vector<uint8_t>(this->getCols());
-      for (int j = 0; j < this->getRows(); j++) {
-        rows.addElement(this->data[i][j]);
+    for (int i = 0; i < m.getCols(); i++) {
+      for (int j = 0; j < m.getRows(); j++) {
+        this->data[i][j] = m[j][i];
       }
     }
 

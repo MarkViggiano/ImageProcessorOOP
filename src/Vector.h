@@ -112,7 +112,16 @@ public:
     return *this;
   }
 
-  //Vector<T> operator*(const Vector& other) const;
+  Vector<T> operator*(const Vector& other) const {
+    if (this->getSize() != other.getSize()) {
+      std::cout << "Invalid sizes for multiplying vectors! Returning the source vector." << std::endl;
+      return *this;
+    }
+
+    for (int i = 0; i < this->getSize(); i++) *(this->getElements() + i) = *(this->getElements() + i) * *(other.getElements() + i);
+    return *this;
+
+  }
 
   // Subscript operator
   T operator[](int index) const {

@@ -53,6 +53,9 @@ public:
     // Get height of the image
     int getHeight() const;
 
+    //Get number of channels
+    int getNumChannels() const;
+
     std::string getFilePath() const;
 
     // Save image to a file
